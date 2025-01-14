@@ -5,6 +5,13 @@ import streamlit as st
 import pandas as pd
 import openpyxl
 
+def get_excel_column_letter(n):
+    string = ""
+    while n> 0:
+        n, remainder = divmod(n - 1, 26)
+        string = chr(65 + remainder) + string
+    return string
+
 def compare_excel_files(file1, file2):
     try:
         df1 = pd.read_excel(file1)
@@ -16,17 +23,17 @@ def compare_excel_files(file1, file2):
 
         changes = []
         for index, row in df1.iterrows():
-            for col in df1.columns:
+            for col_index, col in enumerate(df1.columns):
                 val1 = df1.loc[index, col]
                 val2 = df2.loc[index, col]
                 if pd.isna(val1) and pd.isna(val2):
                     continue
                 elif pd.notna(val1) and pd.isna(val2):
-                    changes.append([len(changes)+1, f"{col}{index+1}", val1, ""])
+                    changes.append([len(changes)+1, f"{get_excel_column_letter(col_index+1)}{index+1}", val1, ""])
                 elif pd.isna(val1) and pd.notna(val2):
-                    changes.append([len(changes)+1, f"{col}{index+1}", "", val2])
+                    changes.append([len(changes)+1, f"{get_excel_column_letter(col_index+1)}{index+1}", "", val2])
                 elif val1 != val2:
-                    changes.append([len(changes)+1, f"{col}{index+1}", val1, val2])
+                    changes.append([len(changes)+1, f"{get_excel_column_letter(col_index+1)}{index+1}", val1, val2])
 
         changes_df = pd.DataFrame(changes, columns=["Change Number", "Cell Reference", "Old Value", "New Value"])
         return changes_df
