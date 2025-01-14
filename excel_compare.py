@@ -48,7 +48,7 @@ if uploaded_file1 is not None and uploaded_file2 is not None:
         # Download the changes as an Excel file
         output = pd.ExcelWriter('comparison_report.xlsx', engine='openpyxl')
         changes_df.to_excel(output, sheet_name='Changes', index=False)
-        output.save()
+        output.close()
         with open("comparison_report.xlsx", "rb") as fp:
             btn = st.download_button(
                 label="Download Excel file",
